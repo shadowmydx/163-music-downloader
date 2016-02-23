@@ -1,7 +1,11 @@
+# -*- coding:utf-8 -*-
 import urllib2
 import re
 import os
 from Address import AddressFactory
+import sys
+reload(sys)
+sys.setdefaultencoding('utf8')
 __author__ = 'shadowmydx'
 
 
