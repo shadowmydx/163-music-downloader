@@ -2,6 +2,7 @@
 import urllib2
 import re
 import os
+import string
 from Address import AddressFactory
 import sys
 reload(sys)
@@ -16,6 +17,7 @@ class AlbumGetter:
         self.root_folder = '163-music/'
         self.ids = None
         self.album_name = None
+        self.limit = 10
         self.address_factory = AddressFactory.AddressFactory()
 
     def set_album_id(self, ids):
@@ -40,11 +42,27 @@ class AlbumGetter:
         self.download_all_music(all_music)
         content_file.close()
 
+    @staticmethod
+    def format_filename(s):
+        valid_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
+        filename = ''.join(c for c in s if c in valid_chars)
+        filename = filename.replace(' ', '_')
+        return filename
+
     def download_all_music(self, all_music):
         for item in all_music:
             file_name = item[1]
             file_url = item[2]
-            target = urllib2.urlopen(file_url)
+            retry = 0
+            target = None
+            while retry < self.limit:
+                try:
+                    target = urllib2.urlopen(file_url)
+                    break
+                except:
+                    print 'Net error, try again...'
+                    retry += 1
+            file_name = self.format_filename(file_name)
             local = open(self.root_folder + self.album_name + '/' + file_name + '.mp3', 'wb')
             local.write(target.read())
             print 'downloading ' + file_name + ' finished.'
@@ -73,5 +91,5 @@ class AlbumGetter:
 
 if __name__ == '__main__':
     album = AlbumGetter()
-    album.set_album_id('3415475')
+    album.set_album_id('11410')
     album.download_album()
