@@ -6,7 +6,7 @@ import string
 from Address import AddressFactory
 import sys
 reload(sys)
-sys.setdefaultencoding('utf8')
+sys.setdefaultencoding('utf-8')
 __author__ = 'shadowmydx'
 
 
@@ -43,10 +43,10 @@ class AlbumGetter:
         content_file.close()
 
     @staticmethod
-    def format_filename(s):
-        valid_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
-        filename = ''.join(c for c in s if c in valid_chars)
-        filename = filename.replace(' ', '_')
+    def format_filename(filename):
+        illegal = u'<>:"\|?*'
+        for item in illegal:
+            filename = filename.replace(item, '_')
         return filename
 
     def download_all_music(self, all_music):
@@ -62,8 +62,9 @@ class AlbumGetter:
                 except:
                     print 'Net error, try again...'
                     retry += 1
+            file_name = unicode(self.root_folder + self.album_name + '/' + file_name + '.mp3')
             file_name = self.format_filename(file_name)
-            local = open(self.root_folder + self.album_name + '/' + file_name + '.mp3', 'wb')
+            local = open(file_name, 'wb')
             local.write(target.read())
             print 'downloading ' + file_name + ' finished.'
             local.close()
@@ -80,7 +81,7 @@ class AlbumGetter:
     def get_album_name(content):
         title_pat = re.compile(r'<h2 class="f-ff2">(?P<title>.*?)</h2>', re.DOTALL)
         match = title_pat.search(content)
-        return match.group('title')
+        return unicode(match.group('title'))
 
     @staticmethod
     def get_all_music(content):
@@ -91,5 +92,5 @@ class AlbumGetter:
 
 if __name__ == '__main__':
     album = AlbumGetter()
-    album.set_album_id('11410')
+    album.set_album_id('46922')
     album.download_album()
