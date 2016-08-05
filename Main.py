@@ -29,7 +29,8 @@ class AlbumGetter:
     def build_music_folder(self):
         if os.path.isdir(self.root_folder + self.album_name):
             return
-        os.makedirs(self.root_folder + self.album_name)
+        self.album_name = self.album_name.split('/')[0].strip()
+        os.makedirs(self.root_folder.strip() + self.album_name)
 
     def download_album(self):
         true_url = self.url + self.ids
@@ -49,6 +50,10 @@ class AlbumGetter:
             filename = filename.replace(item, '_')
         return filename
 
+    @staticmethod
+    def pre_url_handle(file_url):
+        return file_url.replace("http://", "http://183.6.245.250/")
+
     def download_all_music(self, all_music):
         for item in all_music:
             file_name = item[1]
@@ -57,6 +62,7 @@ class AlbumGetter:
             target = None
             while retry < self.limit:
                 try:
+                    file_url = self.pre_url_handle(file_url)
                     target = urllib2.urlopen(file_url)
                     break
                 except:

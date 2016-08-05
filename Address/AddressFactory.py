@@ -30,8 +30,9 @@ class AddressFactory:
             f = gzip.GzipFile(fileobj=buf)
             data = f.read()
             data = json.loads(data)
+            # print data
             try:
-                print 'Get address of song ' + ids
+                print 'Get address of song ' + ids, data['data'][0]['url']
                 return data['data'][0]['url']
             except:
                 print ids
